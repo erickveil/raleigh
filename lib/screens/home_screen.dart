@@ -34,28 +34,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _viewTable(BuildContext context, String tableName) {
-    final tableData = context.read<TablesProvider>().tables[tableName];
-    if (tableData != null) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ViewTableScreen(
-            tableData: tableData,
-            onRecordAdded: (record) {
-              context.read<TablesProvider>().addRecord(tableName, record);
-            },
-            onRecordUpdated: (index, record) {
-              context.read<TablesProvider>().updateRecord(tableName, index, record);
-            },
-            onRecordDeleted: (index) {
-              context.read<TablesProvider>().deleteRecord(tableName, index);
-            },
-            onExportJson: () => _exportTable(context, tableName, 'json'),
-            onExportCsv: () => _exportTable(context, tableName, 'csv'),
-          ),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ViewTableScreen(
+          tableName: tableName,
+          onExportJson: () => _exportTable(context, tableName, 'json'),
+          onExportCsv: () => _exportTable(context, tableName, 'csv'),
         ),
-      );
-    }
+      ),
+    );
   }
 
   void _exportTable(BuildContext context, String tableName, String format) async {

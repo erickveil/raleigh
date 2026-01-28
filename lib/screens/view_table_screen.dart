@@ -1,22 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/table_data.dart';
 import '../models/record.dart';
+import '../providers/tables_provider.dart';
 import 'data_entry_screen.dart';
 
 class ViewTableScreen extends StatefulWidget {
-  final TableData tableData;
-  final Function(Record record) onRecordAdded;
-  final Function(int index, Record record) onRecordUpdated;
-  final Function(int index) onRecordDeleted;
+  final String tableName;
   final Function() onExportJson;
   final Function() onExportCsv;
 
   const ViewTableScreen({
     super.key,
-    required this.tableData,
-    required this.onRecordAdded,
-    required this.onRecordUpdated,
-    required this.onRecordDeleted,
+    required this.tableName,
     required this.onExportJson,
     required this.onExportCsv,
   });
@@ -26,88 +22,31 @@ class ViewTableScreen extends StatefulWidget {
 }
 
 class _ViewTableScreenState extends State<ViewTableScreen> {
-  late TableData _tableData;
-
-  @override
-  void initState() {
-    super.initState();
-    _tableData = widget.tableData;
-  }
-
-  void _addRecord() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => DataEntryScreen(
-          tableDefinition: _tableData.definition,
-          onRecordSaved: (record) {
-            widget.onRecordAdded(record);
-            setState(() {
-              _tableData.addRecord(record);
-            });
-          },
-        ),
-      ),
-    );
-  }
-
-  void _editRecord(int index, Record record) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => DataEntryScreen(
-          tableDefinition: _tableData.definition,
-          onRecordSaved: (updatedRecord) {
-            final newRecord = updatedRecord.copyWith(id: record.id);
-            widget.onRecordUpdated(index, newRecord);
-            setState(() {
-              _tableData.updateRecord(index, newRecord);
-            });
-          },
-        ),
-      ),
-    ).then((result) {
-      if (result == true) {
-        setState(() {});
-      }
-    });
-  }
-
-  void _deleteRecord(int index) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Record'),
-        content: const Text('Are you sure you want to delete this record?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              widget.onRecordDeleted(index);
-              setState(() {
-                _tableData.deleteRecord(index);
-              });
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Record deleted')),
-              );
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
+    return Consumer<TablesProvider>(
+      builder: (context, tablesProvider, _) {
+        final tableData = tablesProvider.tables[widget.tableName];
+        if (tableData == null) {
+          return Scaffold(
+            appBar: AppBar(title: const Text('Table Not Found')),
+            body: const Center(child: Text('Table not found')),
+          );
+        }
+
+        return _buildTableView(context, tableData, tablesProvider);
+      },
+    );
+  }
+
+  Widget _buildTableView(
+    BuildContext context,
+    TableData tableData,
+    TablesProvider tablesProvider,
+  ) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_tableData.definition.name),
+        title: Text(tableData.definition.name),
         actions: [
           PopupMenuButton(
             itemBuilder: (context) => [
@@ -123,7 +62,7 @@ class _ViewTableScreenState extends State<ViewTableScreen> {
           ),
         ],
       ),
-      body: _tableData.records.isEmpty
+      body: tableData.records.isEmpty
           ? Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -151,21 +90,21 @@ class _ViewTableScreenState extends State<ViewTableScreen> {
                   columns: [
                     const DataColumn(label: Text('ID')),
                     const DataColumn(label: Text('RecordDate')),
-                    ..._tableData.definition.columns
+                    ...tableData.definition.columns
                         .map((c) => DataColumn(label: Text(c.name))),
                     const DataColumn(label: Text('Actions')),
                   ],
                   rows: List<DataRow>.generate(
-                    _tableData.records.length,
+                    tableData.records.length,
                     (index) {
-                      final record = _tableData.records[index];
+                      final record = tableData.records[index];
                       return DataRow(
                         cells: [
                           DataCell(Text(record.id?.toString() ?? '')),
                           DataCell(Text(
                             record.recordDate.toLocal().toString().split('.')[0],
                           )),
-                          ..._tableData.definition.columns
+                          ...tableData.definition.columns
                               .map((c) => DataCell(
                                     Text(record.data[c.name]?.toString() ?? ''),
                                   )),
@@ -175,12 +114,13 @@ class _ViewTableScreenState extends State<ViewTableScreen> {
                                 IconButton(
                                   icon: const Icon(Icons.edit),
                                   onPressed: () =>
-                                      _editRecord(index, record),
+                                      _editRecord(context, tableData, index, record, tablesProvider),
                                 ),
                                 IconButton(
                                   icon: const Icon(Icons.delete),
                                   color: Colors.red,
-                                  onPressed: () => _deleteRecord(index),
+                                  onPressed: () =>
+                                      _deleteRecord(context, tableData, index, tablesProvider),
                                 ),
                               ],
                             ),
@@ -193,8 +133,68 @@ class _ViewTableScreenState extends State<ViewTableScreen> {
               ),
             ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _addRecord,
+        onPressed: () => _addRecord(context, tableData, tablesProvider),
         child: const Icon(Icons.add),
+      ),
+    );
+  }
+
+  void _addRecord(BuildContext context, TableData tableData, TablesProvider tablesProvider) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DataEntryScreen(
+          tableDefinition: tableData.definition,
+          onRecordSaved: (record) {
+            tablesProvider.addRecord(widget.tableName, record);
+          },
+        ),
+      ),
+    );
+  }
+
+  void _editRecord(BuildContext context, TableData tableData, int index, Record record, TablesProvider tablesProvider) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DataEntryScreen(
+          tableDefinition: tableData.definition,
+          onRecordSaved: (updatedRecord) {
+            final newRecord = updatedRecord.copyWith(id: record.id);
+            tablesProvider.updateRecord(widget.tableName, index, newRecord);
+          },
+        ),
+      ),
+    ).then((result) {
+      if (result == true) {
+        setState(() {});
+      }
+    });
+  }
+
+  void _deleteRecord(BuildContext context, TableData tableData, int index, TablesProvider tablesProvider) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Record'),
+        content: const Text('Are you sure you want to delete this record?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              tablesProvider.deleteRecord(widget.tableName, index);
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Record deleted')),
+              );
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text('Delete'),
+          ),
+        ],
       ),
     );
   }
