@@ -144,7 +144,7 @@ class _CreateTableScreenState extends State<CreateTableScreen> {
 class _ColumnDialog extends StatefulWidget {
   final Function(String name, ColumnType type) onSave;
 
-  const _ColumnDialog({super.key, required this.onSave});
+  const _ColumnDialog({required this.onSave});
 
   @override
   State<_ColumnDialog> createState() => _ColumnDialogState();
