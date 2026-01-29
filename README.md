@@ -1,16 +1,45 @@
-# raleigh
+# Raleigh Data Tracker
 
-A new Flutter project.
+Raleigh Data Tracker is a Flutter app for creating lightweight, local tables and capturing records with typed columns. It’s designed for quick, offline data collection and export.
 
-## Getting Started
+## Features
 
-This project is a starting point for a Flutter application.
+- Create custom tables with named, typed columns.
+- Supported column types: String, Integer, Double, DateTime, Boolean.
+- Add, edit, and delete records per table.
+- Automatic Record ID and RecordDate tracking.
+- Export a table to JSON or CSV.
+- Import tables from JSON, with optional replace when a table name already exists.
+- Local persistence (app documents directory).
 
-A few resources to get you started if this is your first Flutter project:
+## How It Works
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- Tables are defined by a name and a list of columns.
+- Records are stored with an auto-incremented `id` and a `recordDate` timestamp.
+- All data is persisted to a local JSON file in the app documents directory.
+- Exports are saved into the same app documents directory.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Project Structure
+
+- UI screens live under lib/screens.
+- Table and record models live under lib/models.
+- Data persistence and import/export logic is in lib/services/storage_service.dart.
+- State management uses Provider in lib/providers.
+
+## Running the App
+
+- Ensure Flutter is installed and configured.
+- Fetch dependencies using the standard Flutter workflow.
+- Run the app on your preferred device or emulator.
+
+## Import/Export Notes
+
+- JSON imports expect the app’s own export format.
+- CSV exports include ID and RecordDate columns, followed by your custom columns.
+
+## Tech Stack
+
+- Flutter (Material 3)
+- Provider for state management
+- file_picker for JSON import
+- path_provider for local storage
