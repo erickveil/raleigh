@@ -188,10 +188,19 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('Raleigh Data Tracker'),
         actions: [
-          PopupMenuButton(
+          IconButton(
+            icon: const Icon(Icons.upload_file),
+            tooltip: 'Import Table',
+            onPressed: () => _importTable(context),
+          ),
+          PopupMenuButton<void>(
             itemBuilder: (context) => [
-              PopupMenuItem(
-                onTap: () => _importTable(context),
+              PopupMenuItem<void>(
+                onTap: () {
+                  Future.delayed(Duration.zero, () {
+                    _importTable(context);
+                  });
+                },
                 child: const Text('Import Table'),
               ),
             ],
@@ -251,10 +260,31 @@ class _HomeScreenState extends State<HomeScreen> {
                   subtitle: Text(
                     '${tableData.records.length} records • ${tableData.definition.columns.length} columns',
                   ),
-                  trailing: PopupMenuButton(
+                  trailing: PopupMenuButton<void>(
                     itemBuilder: (context) => [
-                      PopupMenuItem(
-                        onTap: () => _deleteTable(context, tableName),
+                      PopupMenuItem<void>(
+                        onTap: () {
+                          Future.delayed(Duration.zero, () {
+                            _exportTable(context, tableName, 'json');
+                          });
+                        },
+                        child: const Text('Export as JSON'),
+                      ),
+                      PopupMenuItem<void>(
+                        onTap: () {
+                          Future.delayed(Duration.zero, () {
+                            _exportTable(context, tableName, 'csv');
+                          });
+                        },
+                        child: const Text('Export as CSV'),
+                      ),
+                      const PopupMenuDivider(),
+                      PopupMenuItem<void>(
+                        onTap: () {
+                          Future.delayed(Duration.zero, () {
+                            _deleteTable(context, tableName);
+                          });
+                        },
                         child: const Text('Delete'),
                       ),
                     ],
