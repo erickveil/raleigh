@@ -1,0 +1,25 @@
+
+- [ ] Look at warnings when running
+- [ ] Look at where CRUD functions happen and how they happen
+	- [ ] Should our storage be replaced by [Hive](https://pub.dev/documentation/hive/latest/) and have explicit JSON/CSV export buttons for tables?
+- [ ] Remove ID from the record view
+- [ ] Improve design - make it look less generic
+- [ ] Build for android
+- [ ] Build for android in android studio
+- [ ] Make remote repo
+- [ ] build on ios
+- [ ] add table notes/description
+- [ ] Create build + sign scripts for android, ios, windows
+- [ ] Reverse order that the records are displayed in
+- [ ] Calculations displayed at top of records.
+	- [ ] Average, mean, p90, p95, etc.
+	- [ ] Automatic for each int or float field
+- [ ] Graphs
+	- [ ] Integers and floats are auto-graphed at the top above calculations
+	- [ ] Show running averages on graph
+	- [ ] Allow X axis types:
+		- [ ] Daily avg, past week
+		- [ ] Daily avg, past month
+		- [ ] Daily avg, past year
+		- [ ] Daily avg, all time
+		- [ ] By record, past 10, 20, 40, 80, 160, all records
