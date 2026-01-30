@@ -1,5 +1,5 @@
 
-- [ ] Look at warnings when running
+- [x] Look at warnings when running
 - [ ] Look at where CRUD functions happen and how they happen
 	- [ ] Should our storage be replaced by [Hive](https://pub.dev/documentation/hive/latest/) and have explicit JSON/CSV export buttons for tables?
 - [ ] Remove ID from the record view

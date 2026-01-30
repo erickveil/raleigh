@@ -1,8 +1,15 @@
+import 'package:hive/hive.dart';
 import 'record.dart';
 import 'table_definition.dart';
 
+part 'table_data.g.dart';
+
+@HiveType(typeId: 4)
 class TableData {
+  @HiveField(0)
   final TableDefinition definition;
+
+  @HiveField(1)
   final List<Record> records;
 
   TableData({

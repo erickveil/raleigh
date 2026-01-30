@@ -6,7 +6,6 @@ import '../models/table_data.dart';
 
 class StorageService {
   static const String _appDirectory = 'raleigh';
-  static const String _dataFileName = 'tables_data.json';
 
   Future<Directory> _getAppDirectory() async {
     final documentsDirectory = await getApplicationDocumentsDirectory();
@@ -17,53 +16,12 @@ class StorageService {
     return appDir;
   }
 
-  Future<File> _getDataFile() async {
-    final appDir = await _getAppDirectory();
-    return File('${appDir.path}/$_dataFileName');
-  }
-
-  Future<Map<String, TableData>> loadAllTables() async {
-    try {
-      final file = await _getDataFile();
-      if (!await file.exists()) {
-        return {};
-      }
-
-      final contents = await file.readAsString();
-      final json = jsonDecode(contents) as Map<String, dynamic>;
-      
-      final tables = <String, TableData>{};
-      json.forEach((key, value) {
-        tables[key] = TableData.fromJson(value as Map<String, dynamic>);
-      });
-      
-      return tables;
-    } catch (e) {
-      debugPrint('Error loading tables: $e');
-      return {};
-    }
-  }
-
-  Future<void> saveAllTables(Map<String, TableData> tables) async {
-    try {
-      final file = await _getDataFile();
-      final json = <String, dynamic>{};
-      
-      tables.forEach((key, tableData) {
-        json[key] = tableData.toJson();
-      });
-      
-      await file.writeAsString(jsonEncode(json));
-    } catch (e) {
-      debugPrint('Error saving tables: $e');
-      rethrow;
-    }
-  }
-
+  /// Export table as JSON string
   Future<String> exportToJson(TableData tableData) async {
     return jsonEncode(tableData.toJson());
   }
 
+  /// Export table as JSON file
   Future<File?> exportToJsonFile(TableData tableData, String fileName) async {
     try {
       final appDir = await _getAppDirectory();
@@ -76,6 +34,7 @@ class StorageService {
     }
   }
 
+  /// Import table from JSON string
   Future<TableData?> importFromJson(String jsonString) async {
     try {
       final json = jsonDecode(jsonString) as Map<String, dynamic>;
@@ -86,6 +45,7 @@ class StorageService {
     }
   }
 
+  /// Import table from JSON file
   Future<TableData?> importFromJsonFile(File file) async {
     try {
       final contents = await file.readAsString();
@@ -96,6 +56,7 @@ class StorageService {
     }
   }
 
+  /// Export table as CSV string
   Future<String> exportToCsv(TableData tableData) async {
     final definition = tableData.definition;
     final records = tableData.records;
@@ -122,6 +83,7 @@ class StorageService {
     return lines.join('\n');
   }
 
+  /// Export table as CSV file
   Future<File?> exportToCsvFile(TableData tableData, String fileName) async {
     try {
       final appDir = await _getAppDirectory();
@@ -142,6 +104,7 @@ class StorageService {
     return value;
   }
 
+  /// Get the exports directory
   Future<Directory> getExportsDirectory() async {
     return _getAppDirectory();
   }

@@ -1,7 +1,14 @@
+import 'package:hive/hive.dart';
 import 'column_type.dart';
 
+part 'column.g.dart';
+
+@HiveType(typeId: 2)
 class ColumnDef {
+  @HiveField(0)
   final String name;
+
+  @HiveField(1)
   final ColumnType type;
 
   ColumnDef({

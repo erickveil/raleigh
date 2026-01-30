@@ -1,6 +1,16 @@
+import 'package:hive/hive.dart';
+
+part 'record.g.dart';
+
+@HiveType(typeId: 0)
 class Record {
+  @HiveField(0)
   final int? id;
+
+  @HiveField(1)
   final DateTime recordDate;
+
+  @HiveField(2)
   final Map<String, dynamic> data;
 
   Record({

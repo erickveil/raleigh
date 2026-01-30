@@ -1,7 +1,14 @@
+import 'package:hive/hive.dart';
 import 'column.dart';
 
+part 'table_definition.g.dart';
+
+@HiveType(typeId: 3)
 class TableDefinition {
+  @HiveField(0)
   final String name;
+
+  @HiveField(1)
   final List<ColumnDef> columns;
 
   TableDefinition({
