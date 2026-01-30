@@ -93,41 +93,129 @@ class _DataEntryScreenState extends State<DataEntryScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Add Record to ${widget.tableDefinition.name}'),
+        elevation: 0,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            ...widget.tableDefinition.columns.map((column) {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: TextField(
-                  controller: _controllers[column.name],
-                  decoration: InputDecoration(
-                    labelText: column.name,
-                    hintText: _getHintText(column.type),
-                    border: const OutlineInputBorder(),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              const Color(0xFF6366F1).withOpacity(0.05),
+              Colors.white,
+            ],
+          ),
+        ),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              ...widget.tableDefinition.columns.asMap().entries.map((entry) {
+                final index = entry.key;
+                final column = entry.value;
+                final colors = [
+                  const Color(0xFF6366F1),
+                  const Color(0xFF8B5CF6),
+                  const Color(0xFFEC4899),
+                  const Color(0xFFF59E0B),
+                  const Color(0xFF10B981),
+                ];
+                final columnColor = colors[index % colors.length];
+
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: columnColor.withOpacity(0.15),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              column.type.displayName.substring(0, 1).toUpperCase(),
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: columnColor,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  column.name,
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(0xFF1F2937),
+                                  ),
+                                ),
+                                Text(
+                                  column.type.displayName,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      TextField(
+                        controller: _controllers[column.name],
+                        decoration: InputDecoration(
+                          hintText: _getHintText(column.type),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                              color: columnColor,
+                              width: 2,
+                            ),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          filled: true,
+                          fillColor: const Color(0xFFF8F9FF),
+                        ),
+                        keyboardType: _getKeyboardType(column.type),
+                      ),
+                    ],
                   ),
-                  keyboardType: _getKeyboardType(column.type),
-                ),
-              );
-            }),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _saveRecord,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: Colors.green,
-                ),
-                child: const Text(
-                  'Save Record',
-                  style: TextStyle(fontSize: 16),
+                );
+              }),
+              const SizedBox(height: 32),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _saveRecord,
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  child: const Text(
+                    'Save Record',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

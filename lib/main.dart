@@ -41,8 +41,63 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Raleigh Data Tracker',
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color(0xFF6366F1),
+            brightness: Brightness.light,
+          ),
           useMaterial3: true,
+          appBarTheme: AppBarTheme(
+            backgroundColor: const Color(0xFF6366F1),
+            foregroundColor: Colors.white,
+            elevation: 0,
+            centerTitle: false,
+            titleTextStyle: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
+          ),
+          floatingActionButtonTheme: FloatingActionButtonThemeData(
+            backgroundColor: const Color(0xFF6366F1),
+            foregroundColor: Colors.white,
+            elevation: 8,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+          ),
+          cardTheme: CardThemeData(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            clipBehavior: Clip.antiAlias,
+          ),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF6366F1),
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              elevation: 4,
+            ),
+          ),
+          inputDecorationTheme: InputDecorationTheme(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(
+                color: Color(0xFF6366F1),
+                width: 2,
+              ),
+            ),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            filled: true,
+            fillColor: const Color(0xFFF8F9FF),
+          ),
         ),
         home: const HomeScreen(),
       ),

@@ -187,23 +187,15 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Raleigh Data Tracker'),
+        elevation: 0,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.upload_file),
-            tooltip: 'Import Table',
-            onPressed: () => _importTable(context),
-          ),
-          PopupMenuButton<void>(
-            itemBuilder: (context) => [
-              PopupMenuItem<void>(
-                onTap: () {
-                  Future.delayed(Duration.zero, () {
-                    _importTable(context);
-                  });
-                },
-                child: const Text('Import Table'),
-              ),
-            ],
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: IconButton(
+              icon: const Icon(Icons.upload_file),
+              tooltip: 'Import Table',
+              onPressed: () => _importTable(context),
+            ),
           ),
         ],
       ),
@@ -212,93 +204,215 @@ class _HomeScreenState extends State<HomeScreen> {
           final tables = provider.tables;
 
           if (tables.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.table_chart,
-                    size: 64,
-                    color: Colors.grey[400],
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'No tables yet',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.grey[600],
+            return Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    const Color(0xFF6366F1).withOpacity(0.1),
+                    Colors.white,
+                  ],
+                ),
+              ),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF6366F1).withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.table_chart,
+                        size: 64,
+                        color: Color(0xFF6366F1),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton.icon(
-                    onPressed: () => _createNewTable(context),
-                    icon: const Icon(Icons.add),
-                    label: const Text('Create New Table'),
-                  ),
-                ],
+                    const SizedBox(height: 24),
+                    const Text(
+                      'No tables yet',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF1F2937),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Create your first table to get started',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    ElevatedButton.icon(
+                      onPressed: () => _createNewTable(context),
+                      icon: const Icon(Icons.add, size: 20),
+                      label: const Text('Create New Table'),
+                    ),
+                  ],
+                ),
               ),
             );
           }
 
-          return ListView.builder(
-            padding: const EdgeInsets.all(8),
-            itemCount: tables.length,
-            itemBuilder: (context, index) {
-              final tableName = tables.keys.toList()[index];
-              final tableData = tables[tableName]!;
+          return Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  const Color(0xFF6366F1).withOpacity(0.05),
+                  Colors.white,
+                ],
+              ),
+            ),
+            child: ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: tables.length,
+              itemBuilder: (context, index) {
+                final tableName = tables.keys.toList()[index];
+                final tableData = tables[tableName]!;
+                final colors = [
+                  const Color(0xFF6366F1),
+                  const Color(0xFF8B5CF6),
+                  const Color(0xFFEC4899),
+                  const Color(0xFFF59E0B),
+                  const Color(0xFF10B981),
+                ];
+                final cardColor = colors[index % colors.length];
 
-              return Card(
-                margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-                child: ListTile(
-                  title: Text(
-                    tableName,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: Card(
+                    elevation: 2,
+                    child: InkWell(
+                      onTap: () => _viewTable(context, tableName),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              cardColor.withOpacity(0.1),
+                              cardColor.withOpacity(0.05),
+                            ],
+                          ),
+                        ),
+                        padding: const EdgeInsets.all(16),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: cardColor.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Icon(
+                                Icons.table_chart,
+                                color: cardColor,
+                                size: 28,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    tableName,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFF1F2937),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Row(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                          vertical: 4,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: cardColor.withOpacity(0.15),
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        child: Text(
+                                          '${tableData.records.length} records',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w500,
+                                            color: cardColor,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        '${tableData.definition.columns.length} columns',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey[600],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            PopupMenuButton<void>(
+                              itemBuilder: (context) => [
+                                PopupMenuItem<void>(
+                                  onTap: () {
+                                    Future.delayed(Duration.zero, () {
+                                      _exportTable(context, tableName, 'json');
+                                    });
+                                  },
+                                  child: const Text('Export as JSON'),
+                                ),
+                                PopupMenuItem<void>(
+                                  onTap: () {
+                                    Future.delayed(Duration.zero, () {
+                                      _exportTable(context, tableName, 'csv');
+                                    });
+                                  },
+                                  child: const Text('Export as CSV'),
+                                ),
+                                const PopupMenuDivider(),
+                                PopupMenuItem<void>(
+                                  onTap: () {
+                                    Future.delayed(Duration.zero, () {
+                                      _deleteTable(context, tableName);
+                                    });
+                                  },
+                                  child: const Text(
+                                    'Delete',
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
-                  subtitle: Text(
-                    '${tableData.records.length} records • ${tableData.definition.columns.length} columns',
-                  ),
-                  trailing: PopupMenuButton<void>(
-                    itemBuilder: (context) => [
-                      PopupMenuItem<void>(
-                        onTap: () {
-                          Future.delayed(Duration.zero, () {
-                            _exportTable(context, tableName, 'json');
-                          });
-                        },
-                        child: const Text('Export as JSON'),
-                      ),
-                      PopupMenuItem<void>(
-                        onTap: () {
-                          Future.delayed(Duration.zero, () {
-                            _exportTable(context, tableName, 'csv');
-                          });
-                        },
-                        child: const Text('Export as CSV'),
-                      ),
-                      const PopupMenuDivider(),
-                      PopupMenuItem<void>(
-                        onTap: () {
-                          Future.delayed(Duration.zero, () {
-                            _deleteTable(context, tableName);
-                          });
-                        },
-                        child: const Text('Delete'),
-                      ),
-                    ],
-                  ),
-                  onTap: () => _viewTable(context, tableName),
-                ),
-              );
-            },
+                );
+              },
+            ),
           );
         },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _createNewTable(context),
-        child: const Icon(Icons.add),
+        elevation: 8,
+        child: const Icon(Icons.add, size: 28),
       ),
     );
   }

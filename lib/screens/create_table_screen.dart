@@ -67,74 +67,186 @@ class _CreateTableScreenState extends State<CreateTableScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Create New Table'),
+        elevation: 0,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextField(
-              controller: _tableNameController,
-              decoration: const InputDecoration(
-                labelText: 'Table Name',
-                border: OutlineInputBorder(),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              const Color(0xFF6366F1).withOpacity(0.05),
+              Colors.white,
+            ],
+          ),
+        ),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Table Name',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF1F2937),
+                ),
               ),
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              'Columns',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            if (_columns.isEmpty)
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 16),
-                child: Text('No columns added yet'),
-              )
-            else
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: _columns.length,
-                itemBuilder: (context, index) {
-                  final column = _columns[index];
-                  return Card(
-                    child: ListTile(
-                      title: Text(column.name),
-                      subtitle: Text(column.type.displayName),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () => _deleteColumn(index),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _tableNameController,
+                decoration: InputDecoration(
+                  hintText: 'Enter table name',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(
+                      color: Color(0xFF6366F1),
+                      width: 2,
+                    ),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  filled: true,
+                  fillColor: const Color(0xFFF8F9FF),
+                ),
+              ),
+              const SizedBox(height: 32),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Columns',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF1F2937),
+                    ),
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: _addColumn,
+                    icon: const Icon(Icons.add, size: 18),
+                    label: const Text('Add Column'),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
                       ),
                     ),
-                  );
-                },
+                  ),
+                ],
               ),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: _addColumn,
-                icon: const Icon(Icons.add),
-                label: const Text('Add Column'),
-              ),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _createTable,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: Colors.green,
+              const SizedBox(height: 16),
+              if (_columns.isEmpty)
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 32),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.grey[300]!,
+                      width: 2,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                    color: Colors.grey[50],
+                  ),
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.layers_outlined,
+                        size: 40,
+                        color: Colors.grey[400],
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'No columns added yet',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              else
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: _columns.length,
+                  itemBuilder: (context, index) {
+                    final column = _columns[index];
+                    final colors = [
+                      const Color(0xFF6366F1),
+                      const Color(0xFF8B5CF6),
+                      const Color(0xFFEC4899),
+                      const Color(0xFFF59E0B),
+                      const Color(0xFF10B981),
+                    ];
+                    final columnColor = colors[index % colors.length];
+
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: Card(
+                        child: ListTile(
+                          leading: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: columnColor.withOpacity(0.15),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Icon(
+                              Icons.abc,
+                              color: columnColor,
+                              size: 20,
+                            ),
+                          ),
+                          title: Text(
+                            column.name,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                          subtitle: Text(
+                            column.type.displayName,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.delete_outline),
+                            color: Colors.red[400],
+                            onPressed: () => _deleteColumn(index),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 ),
-                child: const Text(
-                  'Create Table',
-                  style: TextStyle(fontSize: 16),
+              const SizedBox(height: 32),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _createTable,
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  child: const Text(
+                    'Create Table',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -177,33 +289,76 @@ class _ColumnDialogState extends State<_ColumnDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text('Add Column'),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       content: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const Text(
+            'Column Name',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF1F2937),
+            ),
+          ),
+          const SizedBox(height: 8),
           TextField(
             controller: _columnNameController,
-            decoration: const InputDecoration(
-              labelText: 'Column Name',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              hintText: 'e.g., Email, Age, Status',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(
+                  color: Color(0xFF6366F1),
+                  width: 2,
+                ),
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 10,
+              ),
+              filled: true,
+              fillColor: const Color(0xFFF8F9FF),
             ),
           ),
           const SizedBox(height: 16),
-          DropdownButton<ColumnType>(
-            isExpanded: true,
-            value: _selectedType,
-            items: ColumnType.values
-                .map((type) => DropdownMenuItem(
-                      value: type,
-                      child: Text(type.displayName),
-                    ))
-                .toList(),
-            onChanged: (value) {
-              if (value != null) {
-                setState(() {
-                  _selectedType = value;
-                });
-              }
-            },
+          const Text(
+            'Data Type',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF1F2937),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey[300]!),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: DropdownButton<ColumnType>(
+              isExpanded: true,
+              underline: const SizedBox(),
+              value: _selectedType,
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              items: ColumnType.values
+                  .map((type) => DropdownMenuItem(
+                        value: type,
+                        child: Text(type.displayName),
+                      ))
+                  .toList(),
+              onChanged: (value) {
+                if (value != null) {
+                  setState(() {
+                    _selectedType = value;
+                  });
+                }
+              },
+            ),
           ),
         ],
       ),
