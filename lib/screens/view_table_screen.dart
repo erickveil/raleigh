@@ -136,7 +136,7 @@ class _ViewTableScreenState extends State<ViewTableScreen> {
                   child: DataTable(
                     columnSpacing: 16,
                     dataRowHeight: 56,
-                    headingRowColor: MaterialStateProperty.all(
+                    headingRowColor: WidgetStateProperty.all(
                       const Color(0xFF6366F1).withOpacity(0.1),
                     ),
                     headingRowHeight: 56,
@@ -183,7 +183,7 @@ class _ViewTableScreenState extends State<ViewTableScreen> {
                       (index) {
                         final record = tableData.records[index];
                         return DataRow(
-                          color: MaterialStateProperty.all(
+                          color: WidgetStateProperty.all(
                             index.isEven
                                 ? Colors.white
                                 : const Color(0xFF6366F1).withOpacity(0.03),
