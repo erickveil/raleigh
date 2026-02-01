@@ -1,4 +1,4 @@
-package com.example.raleigh
+package net.erickveil.raleigh
 
 import io.flutter.embedding.android.FlutterActivity
 

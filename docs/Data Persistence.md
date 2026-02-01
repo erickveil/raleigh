@@ -477,7 +477,7 @@ build/
 Hive stores data in the device's app documents directory:
 
 - **Windows**: `C:\Users\[User]\AppData\Local\[App]\raleigh\`
-- **macOS**: `~/Library/Application Support/com.example.raleigh/raleigh/`
+- **macOS**: `~/Library/Application Support/net.erickveil.raleigh/raleigh/`
 - **Linux**: `~/.local/share/raleigh/`
 - **Android**: App-specific documents directory
 - **iOS**: App documents directory
