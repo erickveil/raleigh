@@ -8,11 +8,37 @@ class StorageService {
   static const String _appDirectory = 'raleigh';
 
   Future<Directory> _getAppDirectory() async {
-    final documentsDirectory = await getApplicationDocumentsDirectory();
-    final appDir = Directory('${documentsDirectory.path}/$_appDirectory');
+    Directory? baseDirectory;
+
+    // Android: prefer public Downloads directory for user accessibility
+    if (Platform.isAndroid) {
+      try {
+        final downloadsDirs = await getExternalStorageDirectories(
+          type: StorageDirectory.downloads,
+        );
+        if (downloadsDirs != null && downloadsDirs.isNotEmpty) {
+          baseDirectory = downloadsDirs.first;
+        }
+      } catch (e) {
+        debugPrint('Android downloads directory not available: $e');
+      }
+    } else {
+      // Desktop: try Downloads directory first (accessible to user)
+      try {
+        baseDirectory = await getDownloadsDirectory();
+      } catch (e) {
+        debugPrint('Downloads directory not available: $e');
+      }
+    }
+
+    // Fall back to Documents directory if Downloads is not available
+    baseDirectory ??= await getApplicationDocumentsDirectory();
+
+    final appDir = Directory('${baseDirectory.path}/$_appDirectory');
     if (!await appDir.exists()) {
       await appDir.create(recursive: true);
     }
+    debugPrint('StorageService app directory: ${appDir.path}');
     return appDir;
   }
 
@@ -27,6 +53,7 @@ class StorageService {
       final appDir = await _getAppDirectory();
       final file = File('${appDir.path}/$fileName');
       await file.writeAsString(jsonEncode(tableData.toJson()));
+      debugPrint('Exported JSON file to: ${file.path}');
       return file;
     } catch (e) {
       debugPrint('Error exporting to JSON: $e');
@@ -90,6 +117,7 @@ class StorageService {
       final file = File('${appDir.path}/$fileName');
       final csv = await exportToCsv(tableData);
       await file.writeAsString(csv);
+      debugPrint('Exported CSV file to: ${file.path}');
       return file;
     } catch (e) {
       debugPrint('Error exporting to CSV: $e');
@@ -106,6 +134,8 @@ class StorageService {
 
   /// Get the exports directory
   Future<Directory> getExportsDirectory() async {
-    return _getAppDirectory();
+    final dir = await _getAppDirectory();
+    debugPrint('Exports directory resolved to: ${dir.path}');
+    return dir;
   }
 }
