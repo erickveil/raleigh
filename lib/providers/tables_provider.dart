@@ -60,6 +60,31 @@ class TablesProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> updateColumnDescription(
+    String tableName,
+    String columnName,
+    String? description,
+  ) async {
+    if (_tables.containsKey(tableName)) {
+      final updatedColumns = _tables[tableName]!.definition.columns.map((col) {
+        if (col.name == columnName) {
+          return col.copyWith(description: description);
+        }
+        return col;
+      }).toList();
+
+      final updatedDefinition = _tables[tableName]!.definition.copyWith(
+        columns: updatedColumns,
+      );
+      _tables[tableName] = TableData(
+        definition: updatedDefinition,
+        records: _tables[tableName]!.records,
+      );
+      await _repository.saveTable(tableName, _tables[tableName]!);
+      notifyListeners();
+    }
+  }
+
   Future<void> addRecord(String tableName, Record record) async {
     if (_tables.containsKey(tableName)) {
       final lastId = _tables[tableName]!.records.isEmpty

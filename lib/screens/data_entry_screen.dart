@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/column_type.dart';
 import '../models/table_definition.dart';
 import '../models/record.dart';
+import '../providers/tables_provider.dart';
 
 class DataEntryScreen extends StatefulWidget {
+  final String tableName;
   final TableDefinition tableDefinition;
   final Function(Record record) onRecordSaved;
 
   const DataEntryScreen({
     super.key,
+    required this.tableName,
     required this.tableDefinition,
     required this.onRecordSaved,
   });
@@ -181,6 +185,21 @@ class _DataEntryScreenState extends State<DataEntryScreen> {
                               ],
                             ),
                           ),
+                          InkWell(
+                            onTap: () => _editColumnDescription(context, column.name),
+                            child: Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                color: columnColor.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Icon(
+                                Icons.edit,
+                                size: 14,
+                                color: columnColor,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 8),
@@ -262,5 +281,67 @@ class _DataEntryScreenState extends State<DataEntryScreen> {
       case ColumnType.boolean:
         return TextInputType.text;
     }
+  }
+
+  void _editColumnDescription(BuildContext context, String columnName) {
+    final column = widget.tableDefinition.columns.firstWhere(
+      (col) => col.name == columnName,
+    );
+    final controller = TextEditingController(text: column.description ?? '');
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Edit Description for ${column.name}'),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        content: TextField(
+          controller: controller,
+          decoration: InputDecoration(
+            hintText: 'Enter a description for this field',
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(
+                color: Color(0xFF6366F1),
+                width: 2,
+              ),
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
+            filled: true,
+            fillColor: const Color(0xFFF8F9FF),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final description = controller.text.trim();
+              final provider = context.read<TablesProvider>();
+              provider.updateColumnDescription(
+                widget.tableName,
+                columnName,
+                description.isEmpty ? null : description,
+              );
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Column description updated'),
+                  backgroundColor: Colors.green,
+                ),
+              );
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    ).whenComplete(() => controller.dispose());
   }
 }

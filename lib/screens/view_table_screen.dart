@@ -314,6 +314,7 @@ class _ViewTableScreenState extends State<ViewTableScreen> {
       context,
       MaterialPageRoute(
         builder: (context) => DataEntryScreen(
+          tableName: widget.tableName,
           tableDefinition: tableData.definition,
           onRecordSaved: (record) {
             tablesProvider.addRecord(widget.tableName, record);
@@ -334,6 +335,7 @@ class _ViewTableScreenState extends State<ViewTableScreen> {
       context,
       MaterialPageRoute(
         builder: (context) => DataEntryScreen(
+          tableName: widget.tableName,
           tableDefinition: tableData.definition,
           onRecordSaved: (updatedRecord) {
             final newRecord = updatedRecord.copyWith(id: record.id);

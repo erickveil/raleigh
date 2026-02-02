@@ -20,6 +20,18 @@ class ColumnDef {
     this.description,
   });
 
+  ColumnDef copyWith({
+    String? name,
+    ColumnType? type,
+    String? description,
+  }) {
+    return ColumnDef(
+      name: name ?? this.name,
+      type: type ?? this.type,
+      description: description ?? this.description,
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'name': name,
