@@ -43,6 +43,23 @@ class TablesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> updateTableDescription(
+    String tableName,
+    String? description,
+  ) async {
+    if (_tables.containsKey(tableName)) {
+      final updatedDefinition = _tables[tableName]!.definition.copyWith(
+        description: description,
+      );
+      _tables[tableName] = TableData(
+        definition: updatedDefinition,
+        records: _tables[tableName]!.records,
+      );
+      await _repository.saveTable(tableName, _tables[tableName]!);
+      notifyListeners();
+    }
+  }
+
   Future<void> addRecord(String tableName, Record record) async {
     if (_tables.containsKey(tableName)) {
       final lastId = _tables[tableName]!.records.isEmpty

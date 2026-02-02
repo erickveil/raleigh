@@ -20,6 +20,18 @@ class TableDefinition {
     this.description,
   });
 
+  TableDefinition copyWith({
+    String? name,
+    List<ColumnDef>? columns,
+    String? description,
+  }) {
+    return TableDefinition(
+      name: name ?? this.name,
+      columns: columns ?? this.columns,
+      description: description ?? this.description,
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'name': name,

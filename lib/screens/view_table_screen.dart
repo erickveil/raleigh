@@ -77,28 +77,7 @@ class _ViewTableScreenState extends State<ViewTableScreen> {
               ),
               child: Column(
                 children: [
-                  if (tableData.definition.description != null &&
-                      tableData.definition.description!.isNotEmpty)
-                    Container(
-                      width: double.infinity,
-                      margin: const EdgeInsets.all(16),
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF6366F1).withOpacity(0.05),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: const Color(0xFF6366F1).withOpacity(0.2),
-                        ),
-                      ),
-                      child: Text(
-                        tableData.definition.description!,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[700],
-                          height: 1.5,
-                        ),
-                      ),
-                    ),
+                  _buildDescriptionSection(tableData, tablesProvider),
                   Expanded(
                     child: Center(
                       child: Column(
@@ -160,28 +139,7 @@ class _ViewTableScreenState extends State<ViewTableScreen> {
               ),
               child: Column(
                 children: [
-                  if (tableData.definition.description != null &&
-                      tableData.definition.description!.isNotEmpty)
-                    Container(
-                      width: double.infinity,
-                      margin: const EdgeInsets.all(16),
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF6366F1).withOpacity(0.05),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: const Color(0xFF6366F1).withOpacity(0.2),
-                        ),
-                      ),
-                      child: Text(
-                        tableData.definition.description!,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[700],
-                          height: 1.5,
-                        ),
-                      ),
-                    ),
+                  _buildDescriptionSection(tableData, tablesProvider),
                   Expanded(
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
@@ -426,5 +384,146 @@ class _ViewTableScreenState extends State<ViewTableScreen> {
         ],
       ),
     );
+  }
+
+  Widget _buildDescriptionSection(
+    TableData tableData,
+    TablesProvider tablesProvider,
+  ) {
+    final hasDescription = tableData.definition.description != null &&
+        tableData.definition.description!.isNotEmpty;
+
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF6366F1).withOpacity(0.05),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: const Color(0xFF6366F1).withOpacity(0.2),
+        ),
+      ),
+      child: hasDescription
+          ? Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Text(
+                    tableData.definition.description!,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[700],
+                      height: 1.5,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                InkWell(
+                  onTap: () =>
+                      _editDescription(context, tableData, tablesProvider),
+                  child: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF6366F1).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: const Icon(
+                      Icons.edit,
+                      size: 16,
+                      color: Color(0xFF6366F1),
+                    ),
+                  ),
+                ),
+              ],
+            )
+          : Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'No description',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[500],
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ),
+                TextButton.icon(
+                  onPressed: () =>
+                      _editDescription(context, tableData, tablesProvider),
+                  icon: const Icon(Icons.add, size: 16),
+                  label: const Text('Add Description'),
+                  style: TextButton.styleFrom(
+                    foregroundColor: const Color(0xFF6366F1),
+                  ),
+                ),
+              ],
+            ),
+    );
+  }
+
+  void _editDescription(
+    BuildContext context,
+    TableData tableData,
+    TablesProvider tablesProvider,
+  ) {
+    final controller = TextEditingController(
+      text: tableData.definition.description ?? '',
+    );
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Edit Table Description'),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        content: TextField(
+          controller: controller,
+          maxLines: 5,
+          decoration: InputDecoration(
+            hintText: 'Enter a description for this table',
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(
+                color: Color(0xFF6366F1),
+                width: 2,
+              ),
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
+            filled: true,
+            fillColor: const Color(0xFFF8F9FF),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final description = controller.text.trim();
+              tablesProvider.updateTableDescription(
+                widget.tableName,
+                description.isEmpty ? null : description,
+              );
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Description updated'),
+                  backgroundColor: Colors.green,
+                ),
+              );
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    ).whenComplete(() => controller.dispose());
   }
 }
