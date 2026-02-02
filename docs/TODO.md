@@ -3,9 +3,9 @@
 - [x] Look at where CRUD functions happen and how they happen
 	- [x] Should our storage be replaced by [Hive](https://pub.dev/documentation/hive/latest/) and have explicit JSON/CSV export buttons for tables?
 - [x] Improve design - make it look less generic
-- [ ] Build for android
-- [ ] Build for android in android studio
-- [ ] Make remote repo
+- [x] Build for android
+- [x] Build for android in android studio
+- [x] Make remote repo
 - [ ] build on ios
 - [ ] add table notes/description
 - [ ] Create build + sign scripts for android, ios, windows

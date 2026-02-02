@@ -3,12 +3,10 @@ import '../models/column.dart' as col;
 import '../models/column_type.dart';
 
 class CreateTableScreen extends StatefulWidget {
-  final Function(String name, List<col.ColumnDef> columns) onTableCreated;
+  final Function(String name, List<col.ColumnDef> columns, String? description)
+  onTableCreated;
 
-  const CreateTableScreen({
-    super.key,
-    required this.onTableCreated,
-  });
+  const CreateTableScreen({super.key, required this.onTableCreated});
 
   @override
   State<CreateTableScreen> createState() => _CreateTableScreenState();
@@ -16,6 +14,7 @@ class CreateTableScreen extends StatefulWidget {
 
 class _CreateTableScreenState extends State<CreateTableScreen> {
   final _tableNameController = TextEditingController();
+  final _tableDescriptionController = TextEditingController();
   final List<col.ColumnDef> _columns = [];
 
   void _addColumn() {
@@ -52,32 +51,32 @@ class _CreateTableScreenState extends State<CreateTableScreen> {
       return;
     }
 
-    widget.onTableCreated(tableName, _columns);
+    final description = _tableDescriptionController.text.trim();
+    widget.onTableCreated(
+      tableName,
+      _columns,
+      description.isEmpty ? null : description,
+    );
     Navigator.pop(context);
   }
 
   @override
   void dispose() {
     _tableNameController.dispose();
+    _tableDescriptionController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Create New Table'),
-        elevation: 0,
-      ),
+      appBar: AppBar(title: const Text('Create New Table'), elevation: 0),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              const Color(0xFF6366F1).withOpacity(0.05),
-              Colors.white,
-            ],
+            colors: [const Color(0xFF6366F1).withOpacity(0.05), Colors.white],
           ),
         ),
         child: SingleChildScrollView(
@@ -98,6 +97,39 @@ class _CreateTableScreenState extends State<CreateTableScreen> {
                 controller: _tableNameController,
                 decoration: InputDecoration(
                   hintText: 'Enter table name',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(
+                      color: Color(0xFF6366F1),
+                      width: 2,
+                    ),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  filled: true,
+                  fillColor: const Color(0xFFF8F9FF),
+                ),
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                'Description (Optional)',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF1F2937),
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _tableDescriptionController,
+                maxLines: 3,
+                decoration: InputDecoration(
+                  hintText: 'Enter a description for this table',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -147,10 +179,7 @@ class _CreateTableScreenState extends State<CreateTableScreen> {
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(vertical: 32),
                   decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.grey[300]!,
-                      width: 2,
-                    ),
+                    border: Border.all(color: Colors.grey[300]!, width: 2),
                     borderRadius: BorderRadius.circular(8),
                     color: Colors.grey[50],
                   ),
@@ -164,10 +193,7 @@ class _CreateTableScreenState extends State<CreateTableScreen> {
                       const SizedBox(height: 12),
                       Text(
                         'No columns added yet',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[600],
-                        ),
+                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                       ),
                     ],
                   ),
@@ -238,10 +264,7 @@ class _CreateTableScreenState extends State<CreateTableScreen> {
                   ),
                   child: const Text(
                     'Create Table',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                 ),
               ),
@@ -346,10 +369,12 @@ class _ColumnDialogState extends State<_ColumnDialog> {
               value: _selectedType,
               padding: const EdgeInsets.symmetric(horizontal: 12),
               items: ColumnType.values
-                  .map((type) => DropdownMenuItem(
-                        value: type,
-                        child: Text(type.displayName),
-                      ))
+                  .map(
+                    (type) => DropdownMenuItem(
+                      value: type,
+                      child: Text(type.displayName),
+                    ),
+                  )
                   .toList(),
               onChanged: (value) {
                 if (value != null) {
@@ -367,10 +392,7 @@ class _ColumnDialogState extends State<_ColumnDialog> {
           onPressed: () => Navigator.pop(context),
           child: const Text('Cancel'),
         ),
-        ElevatedButton(
-          onPressed: _save,
-          child: const Text('Add'),
-        ),
+        ElevatedButton(onPressed: _save, child: const Text('Add')),
       ],
     );
   }

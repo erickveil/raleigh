@@ -22,16 +22,18 @@ class TablesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> createTable(String name, List<col.ColumnDef> columns) async {
+  Future<void> createTable(
+    String name,
+    List<col.ColumnDef> columns,
+    String? description,
+  ) async {
     final definition = TableDefinition(
       name: name,
       columns: columns,
+      description: description,
     );
     await _repository.createTable(name, definition);
-    _tables[name] = TableData(
-      definition: definition,
-      records: [],
-    );
+    _tables[name] = TableData(definition: definition, records: []);
     notifyListeners();
   }
 
@@ -46,8 +48,13 @@ class TablesProvider extends ChangeNotifier {
       final lastId = _tables[tableName]!.records.isEmpty
           ? 0
           : _tables[tableName]!.records.fold<int>(
-              0, (previousValue, record) => record.id != null && record.id! > previousValue ? record.id! : previousValue);
-      
+              0,
+              (previousValue, record) =>
+                  record.id != null && record.id! > previousValue
+                  ? record.id!
+                  : previousValue,
+            );
+
       final newRecord = record.copyWith(id: lastId + 1);
       _tables[tableName]!.addRecord(newRecord);
       await _repository.saveTable(tableName, _tables[tableName]!);

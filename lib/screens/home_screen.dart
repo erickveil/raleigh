@@ -22,11 +22,15 @@ class _HomeScreenState extends State<HomeScreen> {
       context,
       MaterialPageRoute(
         builder: (context) => CreateTableScreen(
-          onTableCreated: (name, columns) {
-            context.read<TablesProvider>().createTable(name, columns);
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Table "$name" created')),
+          onTableCreated: (name, columns, description) {
+            context.read<TablesProvider>().createTable(
+              name,
+              columns,
+              description,
             );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text('Table "$name" created')));
           },
         ),
       ),
@@ -46,7 +50,11 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _exportTable(BuildContext context, String tableName, String format) async {
+  void _exportTable(
+    BuildContext context,
+    String tableName,
+    String format,
+  ) async {
     final provider = context.read<TablesProvider>();
     try {
       String content;
@@ -68,15 +76,15 @@ class _HomeScreenState extends State<HomeScreen> {
       await file.writeAsString(content);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Exported to $fileName')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Exported to $fileName')));
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Export failed: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Export failed: $e')));
       }
     }
   }
@@ -144,6 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       provider.createTable(
                         tableName,
                         importedData.definition.columns,
+                        importedData.definition.description,
                       );
                       Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -159,6 +168,7 @@ class _HomeScreenState extends State<HomeScreen> {
             await provider.createTable(
               tableName,
               importedData.definition.columns,
+              importedData.definition.description,
             );
             // Add records
             for (final record in importedData.records) {
@@ -167,7 +177,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
             if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Table "$tableName" imported successfully')),
+                SnackBar(
+                  content: Text('Table "$tableName" imported successfully'),
+                ),
               );
             }
           }
@@ -175,9 +187,9 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Import failed: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Import failed: $e')));
       }
     }
   }
@@ -243,10 +255,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 8),
                     Text(
                       'Create your first table to get started',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[600],
-                      ),
+                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                     ),
                     const SizedBox(height: 32),
                     ElevatedButton.icon(
@@ -342,7 +351,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                         ),
                                         decoration: BoxDecoration(
                                           color: cardColor.withOpacity(0.15),
-                                          borderRadius: BorderRadius.circular(4),
+                                          borderRadius: BorderRadius.circular(
+                                            4,
+                                          ),
                                         ),
                                         child: Text(
                                           '${tableData.records.length} records',
