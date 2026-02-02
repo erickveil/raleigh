@@ -21,9 +21,15 @@ class _CreateTableScreenState extends State<CreateTableScreen> {
     showDialog(
       context: context,
       builder: (context) => _ColumnDialog(
-        onSave: (columnName, columnType) {
+        onSave: (columnName, columnType, description) {
           setState(() {
-            _columns.add(col.ColumnDef(name: columnName, type: columnType));
+            _columns.add(
+              col.ColumnDef(
+                name: columnName,
+                type: columnType,
+                description: description,
+              ),
+            );
           });
         },
       ),
@@ -277,7 +283,7 @@ class _CreateTableScreenState extends State<CreateTableScreen> {
 }
 
 class _ColumnDialog extends StatefulWidget {
-  final Function(String name, ColumnType type) onSave;
+  final Function(String name, ColumnType type, String? description) onSave;
 
   const _ColumnDialog({required this.onSave});
 
@@ -287,6 +293,7 @@ class _ColumnDialog extends StatefulWidget {
 
 class _ColumnDialogState extends State<_ColumnDialog> {
   final _columnNameController = TextEditingController();
+  final _columnDescriptionController = TextEditingController();
   ColumnType _selectedType = ColumnType.string;
 
   void _save() {
@@ -298,13 +305,19 @@ class _ColumnDialogState extends State<_ColumnDialog> {
       return;
     }
 
-    widget.onSave(columnName, _selectedType);
+    final description = _columnDescriptionController.text.trim();
+    widget.onSave(
+      columnName,
+      _selectedType,
+      description.isEmpty ? null : description,
+    );
     Navigator.pop(context);
   }
 
   @override
   void dispose() {
     _columnNameController.dispose();
+    _columnDescriptionController.dispose();
     super.dispose();
   }
 
@@ -330,6 +343,38 @@ class _ColumnDialogState extends State<_ColumnDialog> {
             controller: _columnNameController,
             decoration: InputDecoration(
               hintText: 'e.g., Email, Age, Status',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(
+                  color: Color(0xFF6366F1),
+                  width: 2,
+                ),
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 10,
+              ),
+              filled: true,
+              fillColor: const Color(0xFFF8F9FF),
+            ),
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'Description (Optional)',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF1F2937),
+            ),
+          ),
+          const SizedBox(height: 8),
+          TextField(
+            controller: _columnDescriptionController,
+            decoration: InputDecoration(
+              hintText: 'e.g., User email address',
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
               ),

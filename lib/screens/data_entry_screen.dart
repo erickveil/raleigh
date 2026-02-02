@@ -157,13 +157,27 @@ class _DataEntryScreenState extends State<DataEntryScreen> {
                                     color: Color(0xFF1F2937),
                                   ),
                                 ),
-                                Text(
-                                  column.type.displayName,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey[600],
+                                if (column.description != null &&
+                                    column.description!.isNotEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 2),
+                                    child: Text(
+                                      column.description!,
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        color: Colors.grey[600],
+                                        fontStyle: FontStyle.italic,
+                                      ),
+                                    ),
+                                  )
+                                else
+                                  Text(
+                                    column.type.displayName,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey[600],
+                                    ),
                                   ),
-                                ),
                               ],
                             ),
                           ),
