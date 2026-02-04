@@ -52,6 +52,49 @@ try {
     if ($LASTEXITCODE -ne 0) { throw "Flutter build failed" }
     Write-Success "Windows build complete"
 
+    # Extract version from pubspec.yaml
+    Write-Header "Preparing deployment package"
+    $pubspecContent = Get-Content -Path "pubspec.yaml" -Raw
+    if ($pubspecContent -match 'version:\s+([^\s+]+)') {
+        $version = $matches[1]
+        Write-Success "Version extracted: $version"
+    } else {
+        throw "Could not extract version from pubspec.yaml"
+    }
+
+    # Create deploy directory if it doesn't exist
+    $deployDir = Join-Path (Split-Path $PSCommandPath -Parent) "deploy"
+    if (-not (Test-Path $deployDir)) {
+        New-Item -ItemType Directory -Path $deployDir | Out-Null
+        Write-Success "Created deploy directory"
+    }
+
+    # Prepare zip package
+    $buildOutput = "build\windows\x64\runner\Release"
+    $tempDir = Join-Path $env:TEMP "raleigh_build_$([System.Guid]::NewGuid())"
+    $appDir = Join-Path $tempDir "raleigh"
+    
+    # Copy built app to temp directory
+    Copy-Item -Path $buildOutput -Destination $appDir -Recurse -Force
+    Write-Success "Copied application files"
+
+    # Create zip file
+    $zipName = "raleigh-$version.zip"
+    $zipPath = Join-Path $deployDir $zipName
+    
+    # Remove existing zip if it exists
+    if (Test-Path $zipPath) {
+        Remove-Item $zipPath -Force
+    }
+
+    # Compress the app directory
+    Compress-Archive -Path $appDir -DestinationPath $zipPath -Force
+    Write-Success "Created deployment package: $zipName"
+
+    # Cleanup temp directory
+    Remove-Item $tempDir -Recurse -Force
+    Write-Success "Cleaned up temporary files"
+
     # Run if requested
     if ($Run) {
         Write-Header "Launching application"
@@ -59,6 +102,7 @@ try {
     }
 
     Write-Host "`n✓ Build successful!" -ForegroundColor Green
+    Write-Host "Deploy package available at: $zipPath" -ForegroundColor Cyan
 } catch {
     Write-Error $_
     exit 1
