@@ -193,11 +193,13 @@ class _ViewTableScreenState extends State<ViewTableScreen> {
                           ],
                           rows: List<DataRow>.generate(
                             tableData.records.length,
-                            (index) {
-                              final record = tableData.records[index];
+                            (displayIndex) {
+                              final recordIndex =
+                                  tableData.records.length - 1 - displayIndex;
+                              final record = tableData.records[recordIndex];
                               return DataRow(
                                 color: WidgetStateProperty.all(
-                                  index.isEven
+                                  displayIndex.isEven
                                       ? Colors.white
                                       : const Color(
                                           0xFF6366F1,
@@ -255,7 +257,7 @@ class _ViewTableScreenState extends State<ViewTableScreen> {
                                             onPressed: () => _editRecord(
                                               context,
                                               tableData,
-                                              index,
+                                              recordIndex,
                                               record,
                                               tablesProvider,
                                             ),
@@ -278,7 +280,7 @@ class _ViewTableScreenState extends State<ViewTableScreen> {
                                             onPressed: () => _deleteRecord(
                                               context,
                                               tableData,
-                                              index,
+                                              recordIndex,
                                               tablesProvider,
                                             ),
                                           ),
