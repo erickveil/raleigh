@@ -23,13 +23,19 @@ class DataEntryScreen extends StatefulWidget {
 
 class _DataEntryScreenState extends State<DataEntryScreen> {
   late Map<String, TextEditingController> _controllers;
+  late Map<String, bool> _boolValues;
 
   @override
   void initState() {
     super.initState();
     _controllers = {};
+    _boolValues = {};
     for (final column in widget.tableDefinition.columns) {
-      _controllers[column.name] = TextEditingController();
+      if (column.type == ColumnType.boolean) {
+        _boolValues[column.name] = false;
+      } else {
+        _controllers[column.name] = TextEditingController();
+      }
     }
   }
 
@@ -38,6 +44,11 @@ class _DataEntryScreenState extends State<DataEntryScreen> {
     bool hasError = false;
 
     for (final column in widget.tableDefinition.columns) {
+      if (column.type == ColumnType.boolean) {
+        data[column.name] = _boolValues[column.name] ?? false;
+        continue;
+      }
+
       final value = _controllers[column.name]!.text.trim();
 
       if (value.isEmpty) {
@@ -203,29 +214,55 @@ class _DataEntryScreenState extends State<DataEntryScreen> {
                         ],
                       ),
                       const SizedBox(height: 8),
-                      TextField(
-                        controller: _controllers[column.name],
-                        decoration: InputDecoration(
-                          hintText: _getHintText(column.type),
-                          border: OutlineInputBorder(
+                      if (column.type == ColumnType.boolean)
+                        Container(
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF8F9FF),
                             borderRadius: BorderRadius.circular(8),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
-                              color: columnColor,
-                              width: 2,
+                            border: Border.all(
+                              color: const Color(0xFFE5E7EB),
                             ),
                           ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
+                          child: CheckboxListTile(
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 4,
+                            ),
+                            value: _boolValues[column.name] ?? false,
+                            onChanged: (value) {
+                              setState(() {
+                                _boolValues[column.name] = value ?? false;
+                              });
+                            },
+                            title: const Text('Set to true'),
+                            controlAffinity: ListTileControlAffinity.leading,
+                            activeColor: columnColor,
                           ),
-                          filled: true,
-                          fillColor: const Color(0xFFF8F9FF),
+                        )
+                      else
+                        TextField(
+                          controller: _controllers[column.name],
+                          decoration: InputDecoration(
+                            hintText: _getHintText(column.type),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                color: columnColor,
+                                width: 2,
+                              ),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 12,
+                            ),
+                            filled: true,
+                            fillColor: const Color(0xFFF8F9FF),
+                          ),
+                          keyboardType: _getKeyboardType(column.type),
                         ),
-                        keyboardType: _getKeyboardType(column.type),
-                      ),
                     ],
                   ),
                 );
