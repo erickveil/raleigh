@@ -179,8 +179,8 @@ class _DataEntryScreenState extends State<DataEntryScreen> {
                                     child: Text(
                                       column.description!,
                                       style: TextStyle(
-                                        fontSize: 11,
-                                        color: Colors.grey[600],
+                                        fontSize: 16,
+                                        color: Colors.black,
                                         fontStyle: FontStyle.italic,
                                       ),
                                     ),
@@ -189,8 +189,8 @@ class _DataEntryScreenState extends State<DataEntryScreen> {
                                   Text(
                                     column.type.displayName,
                                     style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey[600],
+                                      fontSize: 16,
+                                      color: Colors.black,
                                     ),
                                   ),
                               ],
