@@ -25,6 +25,9 @@ function Write-Error {
 
 Write-Host "Raleigh - Windows Build Script" -ForegroundColor Yellow
 
+$repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
+Push-Location $repoRoot
+
 try {
     # Clean if requested
     if ($Clean) {
@@ -106,4 +109,6 @@ try {
 } catch {
     Write-Error $_
     exit 1
+} finally {
+    Pop-Location
 }
