@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import '../providers/tables_provider.dart';
 import '../services/storage_service.dart';
+import '../widgets/contribution_graph.dart';
 import 'create_table_screen.dart';
 import 'view_table_screen.dart';
 
@@ -215,6 +216,19 @@ class _HomeScreenState extends State<HomeScreen> {
         builder: (context, provider, _) {
           final tables = provider.tables;
 
+          // Aggregate contributions
+          final Map<DateTime, int> contributionCounts = {};
+          for (final table in tables.values) {
+            for (final record in table.records) {
+              final date = DateTime(
+                record.recordDate.year,
+                record.recordDate.month,
+                record.recordDate.day,
+              );
+              contributionCounts[date] = (contributionCounts[date] ?? 0) + 1;
+            }
+          }
+
           if (tables.isEmpty) {
             return Container(
               decoration: BoxDecoration(
@@ -231,6 +245,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    if (contributionCounts.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 40),
+                        child: ContributionGraph(
+                          contributionCounts: contributionCounts,
+                          endDate: DateTime.now(),
+                        ),
+                      ),
                     Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
@@ -282,9 +304,20 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             child: ListView.builder(
               padding: const EdgeInsets.all(16),
-              itemCount: tables.length,
+              itemCount: tables.length + 1,
               itemBuilder: (context, index) {
-                final tableName = tables.keys.toList()[index];
+                if (index == 0) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: ContributionGraph(
+                      contributionCounts: contributionCounts,
+                      endDate: DateTime.now(),
+                    ),
+                  );
+                }
+
+                final tableIndex = index - 1;
+                final tableName = tables.keys.toList()[tableIndex];
                 final tableData = tables[tableName]!;
                 final colors = [
                   const Color(0xFF6366F1),
