@@ -339,6 +339,7 @@ class _ViewTableScreenState extends State<ViewTableScreen> {
         builder: (context) => DataEntryScreen(
           tableName: widget.tableName,
           tableDefinition: tableData.definition,
+          record: record,
           onRecordSaved: (updatedRecord) {
             final newRecord = updatedRecord.copyWith(id: record.id);
             tablesProvider.updateRecord(widget.tableName, index, newRecord);

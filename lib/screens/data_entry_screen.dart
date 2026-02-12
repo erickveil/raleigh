@@ -9,12 +9,14 @@ class DataEntryScreen extends StatefulWidget {
   final String tableName;
   final TableDefinition tableDefinition;
   final Function(Record record) onRecordSaved;
+  final Record? record;
 
   const DataEntryScreen({
     super.key,
     required this.tableName,
     required this.tableDefinition,
     required this.onRecordSaved,
+    this.record,
   });
 
   @override
@@ -31,10 +33,13 @@ class _DataEntryScreenState extends State<DataEntryScreen> {
     _controllers = {};
     _boolValues = {};
     for (final column in widget.tableDefinition.columns) {
+      final existingValue = widget.record?.data[column.name];
       if (column.type == ColumnType.boolean) {
-        _boolValues[column.name] = false;
+        _boolValues[column.name] = (existingValue as bool?) ?? false;
       } else {
-        _controllers[column.name] = TextEditingController();
+        _controllers[column.name] = TextEditingController(
+          text: existingValue?.toString() ?? '',
+        );
       }
     }
   }
@@ -89,7 +94,7 @@ class _DataEntryScreenState extends State<DataEntryScreen> {
     }
 
     if (!hasError) {
-      final record = Record(data: data);
+      final record = widget.record?.copyWith(data: data) ?? Record(data: data);
       widget.onRecordSaved(record);
       Navigator.pop(context, true);
     }
@@ -107,7 +112,11 @@ class _DataEntryScreenState extends State<DataEntryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Record to ${widget.tableDefinition.name}'),
+        title: Text(
+          widget.record == null
+              ? 'Add Record to ${widget.tableDefinition.name}'
+              : 'Edit Record in ${widget.tableDefinition.name}',
+        ),
         elevation: 0,
       ),
       body: Container(
