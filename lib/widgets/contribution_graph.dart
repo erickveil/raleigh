@@ -71,92 +71,129 @@ class ContributionGraph extends StatelessWidget {
           child: Column(
             children: [
               Expanded(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  reverse: true, // Start from the right (today)
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: 12,
-                        child: Row(
-                          children: List.generate(weeksToShow, (weekIndex) {
-                            final weekStart = firstDisplayDate.add(
-                              Duration(days: weekIndex * 7),
-                            );
-                            bool showMonth = false;
-                            if (weekIndex == 0) {
-                              showMonth = true;
-                            } else {
-                              final prevWeekStart = firstDisplayDate.add(
-                                Duration(days: (weekIndex - 1) * 7),
-                              );
-                              if (weekStart.month != prevWeekStart.month) {
-                                showMonth = true;
-                              }
-                            }
-
-                            return SizedBox(
-                              width: 12,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        const SizedBox(height: 16), // Month labels + gap
+                        ...['', 'Mon', '', 'Wed', '', 'Fri', ''].map(
+                          (day) => SizedBox(
+                            height: 12,
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 4),
+                              child: Text(
+                                day,
+                                style: TextStyle(
+                                  fontSize: 8,
+                                  color: Colors.grey[400],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Flexible(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        reverse: true, // Start from the right (today)
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
                               height: 12,
-                              child: showMonth
-                                  ? OverflowBox(
-                                      alignment: Alignment.bottomLeft,
-                                      maxWidth: 40,
-                                      maxHeight: 12,
-                                      child: Text(
-                                        monthNames[weekStart.month - 1],
-                                        style: TextStyle(
-                                          fontSize: 9,
-                                          color: Colors.grey[400],
-                                        ),
-                                      ),
-                                    )
-                                  : const SizedBox.shrink(),
-                            );
-                          }),
+                              child: Row(
+                                children: List.generate(weeksToShow, (weekIndex) {
+                                  final weekStart = firstDisplayDate.add(
+                                    Duration(days: weekIndex * 7),
+                                  );
+                                  bool showMonth = false;
+                                  if (weekIndex == 0) {
+                                    showMonth = true;
+                                  } else {
+                                    final prevWeekStart = firstDisplayDate.add(
+                                      Duration(days: (weekIndex - 1) * 7),
+                                    );
+                                    if (weekStart.month != prevWeekStart.month) {
+                                      showMonth = true;
+                                    }
+                                  }
+
+                                  return SizedBox(
+                                    width: 12,
+                                    height: 12,
+                                    child: showMonth
+                                        ? OverflowBox(
+                                            alignment: Alignment.bottomLeft,
+                                            maxWidth: 40,
+                                            maxHeight: 12,
+                                            child: Text(
+                                              monthNames[weekStart.month - 1],
+                                              style: TextStyle(
+                                                fontSize: 9,
+                                                color: Colors.grey[400],
+                                              ),
+                                            ),
+                                          )
+                                        : const SizedBox.shrink(),
+                                  );
+                                }),
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: List.generate(weeksToShow, (weekIndex) {
+                                return Column(
+                                  children: List.generate(7, (dayIndex) {
+                                    final currentDay = firstDisplayDate.add(
+                                      Duration(days: weekIndex * 7 + dayIndex),
+                                    );
+
+                                    if (currentDay.isAfter(endDate)) {
+                                      return _buildEmptyBox(
+                                        const Color(0xFF374151),
+                                      );
+                                    }
+
+                                    if (currentDay.isBefore(startDate)) {
+                                      return _buildEmptyBox(
+                                        const Color(0xFF374151),
+                                      );
+                                    }
+
+                                    final dateKey = DateTime(
+                                      currentDay.year,
+                                      currentDay.month,
+                                      currentDay.day,
+                                    );
+                                    final count =
+                                        contributionCounts[dateKey] ?? 0;
+
+                                    // Week gradient: Red (0) to Purple (270)
+                                    // weekIndex 0 is 1 year ago, weekIndex weeksToShow-1 is today.
+                                    final hue =
+                                        (weekIndex / (weeksToShow - 1)) * 270.0;
+                                    final baseColor =
+                                        HSVColor.fromAHSV(1.0, hue, 0.7, 1.0)
+                                            .toColor();
+
+                                    return _buildContributionBox(
+                                      count,
+                                      baseColor,
+                                    );
+                                  }),
+                                );
+                              }),
+                            ),
+                          ],
                         ),
                       ),
-                      const SizedBox(height: 4),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: List.generate(weeksToShow, (weekIndex) {
-                          return Column(
-                            children: List.generate(7, (dayIndex) {
-                              final currentDay = firstDisplayDate.add(
-                                Duration(days: weekIndex * 7 + dayIndex),
-                              );
-
-                              if (currentDay.isAfter(endDate)) {
-                                return _buildEmptyBox(const Color(0xFF374151));
-                              }
-
-                              if (currentDay.isBefore(startDate)) {
-                                return _buildEmptyBox(const Color(0xFF374151));
-                              }
-
-                              final dateKey = DateTime(
-                                currentDay.year,
-                                currentDay.month,
-                                currentDay.day,
-                              );
-                              final count = contributionCounts[dateKey] ?? 0;
-
-                              // Week gradient: Red (0) to Purple (270)
-                              // weekIndex 0 is 1 year ago, weekIndex weeksToShow-1 is today.
-                              final hue =
-                                  (weekIndex / (weeksToShow - 1)) * 270.0;
-                              final baseColor =
-                                  HSVColor.fromAHSV(1.0, hue, 0.7, 1.0)
-                                      .toColor();
-
-                              return _buildContributionBox(count, baseColor);
-                            }),
-                          );
-                        }),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 8),
