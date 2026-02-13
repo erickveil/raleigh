@@ -54,7 +54,7 @@ class ContributionGraph extends StatelessWidget {
           ),
         ),
         Container(
-          height: 155,
+          height: 185,
           margin: const EdgeInsets.symmetric(horizontal: 16),
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
@@ -78,16 +78,16 @@ class ContributionGraph extends StatelessWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        const SizedBox(height: 16), // Month labels + gap
+                        const SizedBox(height: 20), // Month labels + gap
                         ...['', 'Mon', '', 'Wed', '', 'Fri', ''].map(
                           (day) => SizedBox(
-                            height: 12,
+                            height: 14,
                             child: Padding(
                               padding: const EdgeInsets.only(right: 4),
                               child: Text(
                                 day,
                                 style: TextStyle(
-                                  fontSize: 8,
+                                  fontSize: 10,
                                   color: Colors.grey[400],
                                 ),
                               ),
@@ -104,7 +104,7 @@ class ContributionGraph extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             SizedBox(
-                              height: 12,
+                              height: 16,
                               child: Row(
                                 children: List.generate(weeksToShow, (weekIndex) {
                                   final weekStart = firstDisplayDate.add(
@@ -123,17 +123,17 @@ class ContributionGraph extends StatelessWidget {
                                   }
 
                                   return SizedBox(
-                                    width: 12,
-                                    height: 12,
+                                    width: 14,
+                                    height: 16,
                                     child: showMonth
                                         ? OverflowBox(
                                             alignment: Alignment.bottomLeft,
                                             maxWidth: 40,
-                                            maxHeight: 12,
+                                            maxHeight: 16,
                                             child: Text(
                                               monthNames[weekStart.month - 1],
                                               style: TextStyle(
-                                                fontSize: 9,
+                                                fontSize: 10,
                                                 color: Colors.grey[400],
                                               ),
                                             ),
@@ -203,7 +203,7 @@ class ContributionGraph extends StatelessWidget {
                 children: [
                   Text(
                     'Less',
-                    style: TextStyle(fontSize: 10, color: Colors.grey[400]),
+                    style: TextStyle(fontSize: 11, color: Colors.grey[400]),
                   ),
                   const SizedBox(width: 4),
                   _buildLegendBox(const Color(0xFF6B7280)),
@@ -213,7 +213,7 @@ class ContributionGraph extends StatelessWidget {
                   const SizedBox(width: 4),
                   Text(
                     'More',
-                    style: TextStyle(fontSize: 10, color: Colors.grey[400]),
+                    style: TextStyle(fontSize: 11, color: Colors.grey[400]),
                   ),
                 ],
               ),
@@ -226,8 +226,8 @@ class ContributionGraph extends StatelessWidget {
 
   Widget _buildEmptyBox(Color color) {
     return Container(
-      width: 10,
-      height: 10,
+      width: 12,
+      height: 12,
       margin: const EdgeInsets.all(1),
       decoration: BoxDecoration(
         color: color,
@@ -238,8 +238,8 @@ class ContributionGraph extends StatelessWidget {
 
   Widget _buildLegendBox(Color color) {
     return Container(
-      width: 10,
-      height: 10,
+      width: 12,
+      height: 12,
       margin: const EdgeInsets.symmetric(horizontal: 1),
       decoration: BoxDecoration(
         color: color,
@@ -287,8 +287,8 @@ class ContributionGraph extends StatelessWidget {
     return Tooltip(
       message: message,
       child: Container(
-        width: 10,
-        height: 10,
+        width: 12,
+        height: 12,
         margin: const EdgeInsets.all(1),
         decoration: BoxDecoration(
           color: color,
