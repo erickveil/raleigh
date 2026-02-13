@@ -184,6 +184,7 @@ class ContributionGraph extends StatelessWidget {
                                     return _buildContributionBox(
                                       count,
                                       baseColor,
+                                      currentDay,
                                     );
                                   }),
                                 );
@@ -247,7 +248,7 @@ class ContributionGraph extends StatelessWidget {
     );
   }
 
-  Widget _buildContributionBox(int count, Color baseColor) {
+  Widget _buildContributionBox(int count, Color baseColor, DateTime date) {
     Color color;
     if (count == 0) {
       color = const Color(0xFF6B7280);
@@ -266,13 +267,33 @@ class ContributionGraph extends StatelessWidget {
       color = baseColor.withOpacity(opacity);
     }
 
-    return Container(
-      width: 10,
-      height: 10,
-      margin: const EdgeInsets.all(1),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(2),
+    final monthNames = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    final dateStr = '${monthNames[date.month - 1]} ${date.day}';
+    final message = '$count contribution${count == 1 ? '' : 's'} for $dateStr';
+
+    return Tooltip(
+      message: message,
+      child: Container(
+        width: 10,
+        height: 10,
+        margin: const EdgeInsets.all(1),
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(2),
+        ),
       ),
     );
   }
