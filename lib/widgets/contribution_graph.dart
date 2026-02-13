@@ -44,11 +44,11 @@ class ContributionGraph extends StatelessWidget {
           margin: const EdgeInsets.symmetric(horizontal: 16),
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: const Color(0xFF111827),
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withOpacity(0.2),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -70,11 +70,11 @@ class ContributionGraph extends StatelessWidget {
                           );
 
                           if (currentDay.isAfter(endDate)) {
-                            return _buildEmptyBox(Colors.grey[200]!);
+                            return _buildEmptyBox(const Color(0xFF374151));
                           }
                           
                           if (currentDay.isBefore(startDate)) {
-                            return _buildEmptyBox(Colors.grey[200]!);
+                            return _buildEmptyBox(const Color(0xFF374151));
                           }
 
                           final dateKey = DateTime(
@@ -87,7 +87,7 @@ class ContributionGraph extends StatelessWidget {
                           // Week gradient: Red (0) to Purple (270)
                           // weekIndex 0 is 1 year ago, weekIndex weeksToShow-1 is today.
                           final hue = (weekIndex / (weeksToShow - 1)) * 270.0;
-                          final baseColor = HSVColor.fromAHSV(1.0, hue, 0.7, 0.8)
+                          final baseColor = HSVColor.fromAHSV(1.0, hue, 0.7, 1.0)
                               .toColor();
 
                           return _buildContributionBox(count, baseColor);
@@ -103,17 +103,17 @@ class ContributionGraph extends StatelessWidget {
                 children: [
                   Text(
                     'Less',
-                    style: TextStyle(fontSize: 10, color: Colors.grey[600]),
+                    style: TextStyle(fontSize: 10, color: Colors.grey[400]),
                   ),
                   const SizedBox(width: 4),
-                  _buildLegendBox(Colors.grey[200]!),
-                  _buildLegendBox(const Color(0xFF6366F1).withOpacity(0.3)),
+                  _buildLegendBox(const Color(0xFF6B7280)),
+                  _buildLegendBox(const Color(0xFF6366F1).withOpacity(0.35)),
                   _buildLegendBox(const Color(0xFF6366F1).withOpacity(0.6)),
                   _buildLegendBox(const Color(0xFF6366F1)),
                   const SizedBox(width: 4),
                   Text(
                     'More',
-                    style: TextStyle(fontSize: 10, color: Colors.grey[600]),
+                    style: TextStyle(fontSize: 10, color: Colors.grey[400]),
                   ),
                 ],
               ),
@@ -151,18 +151,18 @@ class ContributionGraph extends StatelessWidget {
   Widget _buildContributionBox(int count, Color baseColor) {
     Color color;
     if (count == 0) {
-      color = Colors.grey[100]!;
+      color = const Color(0xFF6B7280);
     } else {
       // Scale: 1, 2-3, 4-6, 7+
       double opacity;
       if (count >= 7) {
         opacity = 1.0;
       } else if (count >= 4) {
-        opacity = 0.7;
+        opacity = 0.8;
       } else if (count >= 2) {
-        opacity = 0.45;
+        opacity = 0.55;
       } else {
-        opacity = 0.25;
+        opacity = 0.35;
       }
       color = baseColor.withOpacity(opacity);
     }
