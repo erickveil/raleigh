@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../models/table_data.dart';
 import '../models/record.dart';
 import '../providers/tables_provider.dart';
+import '../widgets/contribution_graph.dart';
 import 'data_entry_screen.dart';
 
 class ViewTableScreen extends StatefulWidget {
@@ -34,7 +35,23 @@ class _ViewTableScreenState extends State<ViewTableScreen> {
           );
         }
 
-        return _buildTableView(context, tableData, tablesProvider);
+        // Aggregate contributions for this table only
+        final Map<DateTime, int> contributionCounts = {};
+        for (final record in tableData.records) {
+          final date = DateTime(
+            record.recordDate.year,
+            record.recordDate.month,
+            record.recordDate.day,
+          );
+          contributionCounts[date] = (contributionCounts[date] ?? 0) + 1;
+        }
+
+        return _buildTableView(
+          context,
+          tableData,
+          tablesProvider,
+          contributionCounts,
+        );
       },
     );
   }
@@ -43,6 +60,7 @@ class _ViewTableScreenState extends State<ViewTableScreen> {
     BuildContext context,
     TableData tableData,
     TablesProvider tablesProvider,
+    Map<DateTime, int> contributionCounts,
   ) {
     return Scaffold(
       appBar: AppBar(
@@ -78,6 +96,13 @@ class _ViewTableScreenState extends State<ViewTableScreen> {
               child: Column(
                 children: [
                   _buildDescriptionSection(tableData, tablesProvider),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: ContributionGraph(
+                      contributionCounts: contributionCounts,
+                      endDate: DateTime.now(),
+                    ),
+                  ),
                   Expanded(
                     child: Center(
                       child: Column(
@@ -139,161 +164,173 @@ class _ViewTableScreenState extends State<ViewTableScreen> {
               ),
               child: Column(
                 children: [
-                  _buildDescriptionSection(tableData, tablesProvider),
                   Expanded(
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: SingleChildScrollView(
-                        child: DataTable(
-                          columnSpacing: 16,
-                          dataRowHeight: 56,
-                          headingRowColor: WidgetStateProperty.all(
-                            const Color(0xFF6366F1).withOpacity(0.1),
+                    child: ListView(
+                      children: [
+                        _buildDescriptionSection(tableData, tablesProvider),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: ContributionGraph(
+                            contributionCounts: contributionCounts,
+                            endDate: DateTime.now(),
                           ),
-                          headingRowHeight: 56,
-                          columns: [
-                            const DataColumn(
-                              label: Text(
-                                'ID',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xFF1F2937),
-                                ),
-                              ),
+                        ),
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: DataTable(
+                            columnSpacing: 16,
+                            dataRowHeight: 56,
+                            headingRowColor: WidgetStateProperty.all(
+                              const Color(0xFF6366F1).withOpacity(0.1),
                             ),
-                            const DataColumn(
-                              label: Text(
-                                'Date',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xFF1F2937),
-                                ),
-                              ),
-                            ),
-                            ...tableData.definition.columns.map(
-                              (c) => DataColumn(
+                            headingRowHeight: 56,
+                            columns: [
+                              const DataColumn(
                                 label: Text(
-                                  c.name,
-                                  style: const TextStyle(
+                                  'ID',
+                                  style: TextStyle(
                                     fontWeight: FontWeight.w600,
                                     color: Color(0xFF1F2937),
                                   ),
                                 ),
                               ),
-                            ),
-                            const DataColumn(
-                              label: Text(
-                                'Actions',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xFF1F2937),
+                              const DataColumn(
+                                label: Text(
+                                  'Date',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(0xFF1F2937),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                          rows: List<DataRow>.generate(
-                            tableData.records.length,
-                            (displayIndex) {
-                              final recordIndex =
-                                  tableData.records.length - 1 - displayIndex;
-                              final record = tableData.records[recordIndex];
-                              return DataRow(
-                                color: WidgetStateProperty.all(
-                                  displayIndex.isEven
-                                      ? Colors.white
-                                      : const Color(
-                                          0xFF6366F1,
-                                        ).withOpacity(0.03),
+                              ...tableData.definition.columns.map(
+                                (c) => DataColumn(
+                                  label: Text(
+                                    c.name,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFF1F2937),
+                                    ),
+                                  ),
                                 ),
-                                cells: [
-                                  DataCell(
-                                    Text(
-                                      record.id?.toString() ?? '',
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 13,
-                                      ),
-                                    ),
+                              ),
+                              const DataColumn(
+                                label: Text(
+                                  'Actions',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(0xFF1F2937),
                                   ),
-                                  DataCell(
-                                    Text(
-                                      record.recordDate
-                                          .toLocal()
-                                          .toString()
-                                          .split('.')[0],
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                        color: Colors.grey[700],
-                                      ),
-                                    ),
+                                ),
+                              ),
+                            ],
+                            rows: List<DataRow>.generate(
+                              tableData.records.length,
+                              (displayIndex) {
+                                final recordIndex =
+                                    tableData.records.length - 1 - displayIndex;
+                                final record = tableData.records[recordIndex];
+                                return DataRow(
+                                  color: WidgetStateProperty.all(
+                                    displayIndex.isEven
+                                        ? Colors.white
+                                        : const Color(
+                                            0xFF6366F1,
+                                          ).withOpacity(0.03),
                                   ),
-                                  ...tableData.definition.columns.map(
-                                    (c) => DataCell(
+                                  cells: [
+                                    DataCell(
                                       Text(
-                                        record.data[c.name]?.toString() ?? '',
-                                        style: const TextStyle(fontSize: 13),
+                                        record.id?.toString() ?? '',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 13,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  DataCell(
-                                    Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            color: const Color(
-                                              0xFF6366F1,
-                                            ).withOpacity(0.1),
-                                            borderRadius: BorderRadius.circular(
-                                              6,
-                                            ),
-                                          ),
-                                          child: IconButton(
-                                            icon: const Icon(
-                                              Icons.edit_outlined,
-                                            ),
-                                            color: const Color(0xFF6366F1),
-                                            iconSize: 18,
-                                            onPressed: () => _editRecord(
-                                              context,
-                                              tableData,
-                                              recordIndex,
-                                              record,
-                                              tablesProvider,
-                                            ),
-                                          ),
+                                    DataCell(
+                                      Text(
+                                        record.recordDate
+                                            .toLocal()
+                                            .toString()
+                                            .split('.')[0],
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          color: Colors.grey[700],
                                         ),
-                                        const SizedBox(width: 4),
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            color: Colors.red.withOpacity(0.1),
-                                            borderRadius: BorderRadius.circular(
-                                              6,
-                                            ),
-                                          ),
-                                          child: IconButton(
-                                            icon: const Icon(
-                                              Icons.delete_outline,
-                                            ),
-                                            color: Colors.red[400],
-                                            iconSize: 18,
-                                            onPressed: () => _deleteRecord(
-                                              context,
-                                              tableData,
-                                              recordIndex,
-                                              tablesProvider,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              );
-                            },
+                                    ...tableData.definition.columns.map(
+                                      (c) => DataCell(
+                                        Text(
+                                          record.data[c.name]?.toString() ?? '',
+                                          style: const TextStyle(fontSize: 13),
+                                        ),
+                                      ),
+                                    ),
+                                    DataCell(
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              color: const Color(
+                                                0xFF6366F1,
+                                              ).withOpacity(0.1),
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                6,
+                                              ),
+                                            ),
+                                            child: IconButton(
+                                              icon: const Icon(
+                                                Icons.edit_outlined,
+                                              ),
+                                              color: const Color(0xFF6366F1),
+                                              iconSize: 18,
+                                              onPressed: () => _editRecord(
+                                                context,
+                                                tableData,
+                                                recordIndex,
+                                                record,
+                                                tablesProvider,
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              color:
+                                                  Colors.red.withOpacity(0.1),
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                6,
+                                              ),
+                                            ),
+                                            child: IconButton(
+                                              icon: const Icon(
+                                                Icons.delete_outline,
+                                              ),
+                                              color: Colors.red[400],
+                                              iconSize: 18,
+                                              onPressed: () => _deleteRecord(
+                                                context,
+                                                tableData,
+                                                recordIndex,
+                                                tablesProvider,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
                 ],
