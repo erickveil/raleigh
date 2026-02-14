@@ -60,6 +60,33 @@ class TablesProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> addColumn(
+    String tableName,
+    col.ColumnDef newColumn,
+    dynamic defaultValue,
+  ) async {
+    if (_tables.containsKey(tableName)) {
+      final tableData = _tables[tableName]!;
+      final updatedColumns = [...tableData.definition.columns, newColumn];
+      final updatedDefinition = tableData.definition.copyWith(
+        columns: updatedColumns,
+      );
+
+      final updatedRecords = tableData.records.map((record) {
+        final newData = Map<String, dynamic>.from(record.data);
+        newData[newColumn.name] = defaultValue;
+        return record.copyWith(data: newData);
+      }).toList();
+
+      _tables[tableName] = TableData(
+        definition: updatedDefinition,
+        records: updatedRecords,
+      );
+      await _repository.saveTable(tableName, _tables[tableName]!);
+      notifyListeners();
+    }
+  }
+
   Future<void> updateColumnDescription(
     String tableName,
     String columnName,
