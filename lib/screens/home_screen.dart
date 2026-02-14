@@ -76,13 +76,13 @@ class _HomeScreenState extends State<HomeScreen> {
       final file = File('${directory.path}/$fileName');
       await file.writeAsString(content);
 
-      if (mounted) {
+      if (context.mounted) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('Exported to $fileName')));
       }
     } catch (e) {
-      if (mounted) {
+      if (context.mounted) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('Export failed: $e')));
@@ -128,13 +128,13 @@ class _HomeScreenState extends State<HomeScreen> {
         final file = File(result.files.single.path!);
         final importedData = await _storageService.importFromJsonFile(file);
 
-        if (importedData != null && mounted) {
+        if (importedData != null && context.mounted) {
           final tableName = importedData.definition.name;
           final provider = context.read<TablesProvider>();
 
           // Check if table already exists
           if (provider.tables.containsKey(tableName)) {
-            if (!mounted) return;
+            if (!context.mounted) return;
             showDialog(
               context: context,
               builder: (context) => AlertDialog(
@@ -176,7 +176,7 @@ class _HomeScreenState extends State<HomeScreen> {
               await provider.addRecord(tableName, record);
             }
 
-            if (mounted) {
+            if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text('Table "$tableName" imported successfully'),
@@ -187,7 +187,7 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       }
     } catch (e) {
-      if (mounted) {
+      if (context.mounted) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('Import failed: $e')));
@@ -236,7 +236,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    const Color(0xFF6366F1).withOpacity(0.1),
+                    const Color(0xFF6366F1).withValues(alpha:0.1),
                     Colors.white,
                   ],
                 ),
@@ -256,7 +256,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF6366F1).withOpacity(0.1),
+                        color: const Color(0xFF6366F1).withValues(alpha:0.1),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
@@ -297,7 +297,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  const Color(0xFF6366F1).withOpacity(0.05),
+                  const Color(0xFF6366F1).withValues(alpha:0.05),
                   Colors.white,
                 ],
               ),
@@ -341,8 +341,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                             colors: [
-                              cardColor.withOpacity(0.1),
-                              cardColor.withOpacity(0.05),
+                              cardColor.withValues(alpha:0.1),
+                              cardColor.withValues(alpha:0.05),
                             ],
                           ),
                         ),
@@ -352,7 +352,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: cardColor.withOpacity(0.2),
+                                color: cardColor.withValues(alpha:0.2),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Icon(
@@ -383,7 +383,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           vertical: 4,
                                         ),
                                         decoration: BoxDecoration(
-                                          color: cardColor.withOpacity(0.15),
+                                          color: cardColor.withValues(alpha:0.15),
                                           borderRadius: BorderRadius.circular(
                                             4,
                                           ),
@@ -415,7 +415,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 PopupMenuItem<void>(
                                   onTap: () {
                                     Future.delayed(Duration.zero, () {
-                                      _exportTable(context, tableName, 'json');
+                                      if (context.mounted) {
+                                        _exportTable(context, tableName, 'json');
+                                      }
                                     });
                                   },
                                   child: const Text('Export as JSON'),
@@ -423,7 +425,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 PopupMenuItem<void>(
                                   onTap: () {
                                     Future.delayed(Duration.zero, () {
-                                      _exportTable(context, tableName, 'csv');
+                                      if (context.mounted) {
+                                        _exportTable(context, tableName, 'csv');
+                                      }
                                     });
                                   },
                                   child: const Text('Export as CSV'),
@@ -432,7 +436,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 PopupMenuItem<void>(
                                   onTap: () {
                                     Future.delayed(Duration.zero, () {
-                                      _deleteTable(context, tableName);
+                                      if (context.mounted) {
+                                        _deleteTable(context, tableName);
+                                      }
                                     });
                                   },
                                   child: const Text(

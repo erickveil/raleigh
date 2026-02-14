@@ -125,7 +125,7 @@ class _DataEntryScreenState extends State<DataEntryScreen> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              const Color(0xFF6366F1).withOpacity(0.05),
+              const Color(0xFF6366F1).withValues(alpha:0.05),
               Colors.white,
             ],
           ),
@@ -156,7 +156,7 @@ class _DataEntryScreenState extends State<DataEntryScreen> {
                           Container(
                             padding: const EdgeInsets.all(6),
                             decoration: BoxDecoration(
-                              color: columnColor.withOpacity(0.15),
+                              color: columnColor.withValues(alpha:0.15),
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(
@@ -210,7 +210,7 @@ class _DataEntryScreenState extends State<DataEntryScreen> {
                             child: Container(
                               padding: const EdgeInsets.all(4),
                               decoration: BoxDecoration(
-                                color: columnColor.withOpacity(0.1),
+                                color: columnColor.withValues(alpha:0.1),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Icon(

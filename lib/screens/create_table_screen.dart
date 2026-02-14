@@ -82,7 +82,7 @@ class _CreateTableScreenState extends State<CreateTableScreen> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [const Color(0xFF6366F1).withOpacity(0.05), Colors.white],
+            colors: [const Color(0xFF6366F1).withValues(alpha:0.05), Colors.white],
           ),
         ),
         child: SingleChildScrollView(
@@ -227,7 +227,7 @@ class _CreateTableScreenState extends State<CreateTableScreen> {
                           leading: Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: columnColor.withOpacity(0.15),
+                              color: columnColor.withValues(alpha:0.15),
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Icon(

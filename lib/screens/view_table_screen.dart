@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/table_data.dart';
 import '../models/record.dart';
-import '../models/column_type.dart';
-import '../models/column.dart' as col;
 import '../providers/tables_provider.dart';
 import '../widgets/contribution_graph.dart';
 import '../widgets/add_column_dialog.dart';
@@ -113,7 +111,7 @@ class _ViewTableScreenState extends State<ViewTableScreen> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    const Color(0xFF6366F1).withOpacity(0.1),
+                    const Color(0xFF6366F1).withValues(alpha:0.1),
                     Colors.white,
                   ],
                 ),
@@ -136,7 +134,7 @@ class _ViewTableScreenState extends State<ViewTableScreen> {
                           Container(
                             padding: const EdgeInsets.all(20),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF6366F1).withOpacity(0.1),
+                              color: const Color(0xFF6366F1).withValues(alpha:0.1),
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(
@@ -182,7 +180,7 @@ class _ViewTableScreenState extends State<ViewTableScreen> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    const Color(0xFF6366F1).withOpacity(0.05),
+                    const Color(0xFF6366F1).withValues(alpha:0.05),
                     Colors.white,
                   ],
                 ),
@@ -204,9 +202,10 @@ class _ViewTableScreenState extends State<ViewTableScreen> {
                           scrollDirection: Axis.horizontal,
                           child: DataTable(
                             columnSpacing: 16,
-                            dataRowHeight: 56,
+                            dataRowMinHeight: 56,
+                            dataRowMaxHeight: 56,
                             headingRowColor: WidgetStateProperty.all(
-                              const Color(0xFF6366F1).withOpacity(0.1),
+                              const Color(0xFF6366F1).withValues(alpha:0.1),
                             ),
                             headingRowHeight: 56,
                             columns: [
@@ -261,7 +260,7 @@ class _ViewTableScreenState extends State<ViewTableScreen> {
                                         ? Colors.white
                                         : const Color(
                                             0xFF6366F1,
-                                          ).withOpacity(0.03),
+                                          ).withValues(alpha:0.03),
                                   ),
                                   cells: [
                                     DataCell(
@@ -301,7 +300,7 @@ class _ViewTableScreenState extends State<ViewTableScreen> {
                                             decoration: BoxDecoration(
                                               color: const Color(
                                                 0xFF6366F1,
-                                              ).withOpacity(0.1),
+                                              ).withValues(alpha:0.1),
                                               borderRadius:
                                                   BorderRadius.circular(
                                                 6,
@@ -326,7 +325,7 @@ class _ViewTableScreenState extends State<ViewTableScreen> {
                                           Container(
                                             decoration: BoxDecoration(
                                               color:
-                                                  Colors.red.withOpacity(0.1),
+                                                  Colors.red.withValues(alpha:0.1),
                                               borderRadius:
                                                   BorderRadius.circular(
                                                 6,
@@ -465,10 +464,10 @@ class _ViewTableScreenState extends State<ViewTableScreen> {
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF6366F1).withOpacity(0.05),
+        color: const Color(0xFF6366F1).withValues(alpha:0.05),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: const Color(0xFF6366F1).withOpacity(0.2),
+          color: const Color(0xFF6366F1).withValues(alpha:0.2),
         ),
       ),
       child: hasDescription
@@ -492,7 +491,7 @@ class _ViewTableScreenState extends State<ViewTableScreen> {
                   child: Container(
                     padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF6366F1).withOpacity(0.1),
+                      color: const Color(0xFF6366F1).withValues(alpha:0.1),
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: const Icon(

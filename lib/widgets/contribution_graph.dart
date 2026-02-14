@@ -62,7 +62,7 @@ class ContributionGraph extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.2),
+                color: Colors.black.withValues(alpha:0.2),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -207,8 +207,8 @@ class ContributionGraph extends StatelessWidget {
                   ),
                   const SizedBox(width: 4),
                   _buildLegendBox(const Color(0xFF6B7280)),
-                  _buildLegendBox(const Color(0xFF6366F1).withOpacity(0.35)),
-                  _buildLegendBox(const Color(0xFF6366F1).withOpacity(0.6)),
+                  _buildLegendBox(const Color(0xFF6366F1).withValues(alpha:0.35)),
+                  _buildLegendBox(const Color(0xFF6366F1).withValues(alpha:0.6)),
                   _buildLegendBox(const Color(0xFF6366F1)),
                   const SizedBox(width: 4),
                   Text(
@@ -264,7 +264,7 @@ class ContributionGraph extends StatelessWidget {
       } else {
         opacity = 0.35;
       }
-      color = baseColor.withOpacity(opacity);
+      color = baseColor.withValues(alpha:opacity);
     }
 
     final monthNames = [

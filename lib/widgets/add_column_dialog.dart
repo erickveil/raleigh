@@ -42,6 +42,8 @@
 /// 4. Toggle the checkbox and click "Add Column".
 /// 5. **Verification:** Existing records should now have the selected boolean value in the new column.
 
+library;
+
 import 'package:flutter/material.dart';
 import '../models/column.dart' as col;
 import '../models/column_type.dart';
