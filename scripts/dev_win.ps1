@@ -9,6 +9,11 @@ try {
     flutter pub get
     if ($LASTEXITCODE -ne 0) { throw "Flutter pub get failed" }
 
+    Write-Host "`n=== Generating launcher icons ===" -ForegroundColor Cyan
+    dart run flutter_launcher_icons
+    if ($LASTEXITCODE -ne 0) { throw "flutter_launcher_icons failed" }
+    Copy-Item -Path "assets\app_icon.ico" -Destination "windows\runner\resources\app_icon.ico" -Force
+
     Write-Host "`n=== Generating code ===" -ForegroundColor Cyan
     dart run build_runner build
     if ($LASTEXITCODE -ne 0) { throw "Build runner failed" }

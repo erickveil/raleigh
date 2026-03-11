@@ -43,6 +43,14 @@ try {
     if ($LASTEXITCODE -ne 0) { throw "Flutter pub get failed" }
     Write-Success "Dependencies installed"
 
+    # Generate launcher icons for all platforms
+    Write-Header "Generating launcher icons"
+    dart run flutter_launcher_icons
+    if ($LASTEXITCODE -ne 0) { throw "flutter_launcher_icons failed" }
+    # Use the pre-made ICO for Windows (higher quality than generated)
+    Copy-Item -Path "assets\app_icon.ico" -Destination "windows\runner\resources\app_icon.ico" -Force
+    Write-Success "Launcher icons generated"
+
     # Generate code (Hive adapters, etc.)
     Write-Header "Generating code"
     dart run build_runner build
