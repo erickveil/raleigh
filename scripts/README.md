@@ -55,6 +55,40 @@ Comprehensive build script for preparing the app for distribution or final testi
 - Need a clean build to ensure everything works
 - Preparing for distribution
 
+### `build_android.js` - Full Android Build
+Builds a release-signed APK for distribution. Passwords are kept out of the script — signing config is read from an external `key.properties` file.
+
+```bash
+node scripts\build_android.js
+```
+
+**Configuration:**
+Edit the `KEYSTORE_DIR` variable at the top of the script (line 37).
+Change it to whichever directory has the keystore you want to use.
+Each directory is expected to contain a `key.properties` + `.jks` pair:
+
+```
+C:\AndroidPlayStore\
+├── Dummy\
+    ├── key.properties       ← storePassword, keyPassword, keyAlias, storeFile
+    └── dummy-keystore.jks
+```
+
+The script reads `key.properties` from `KEYSTORE_DIR`, copies it into
+`android\key.properties` at build time, and the `.jks` path inside it
+points to the matching keystore. The whole setup lives outside the repo
+so credentials never get committed.
+
+**What it does:**
+1. Regenerates Android launcher icons
+2. Removes stale `build\app` artifacts
+3. Copies signing config from `KEY_PROPERTIES_SOURCE` to `android\key.properties`
+4. Builds a release-signed APK (`flutter build apk --release`)
+5. Copies the APK to `scripts\deploy\raleigh-v<version>.apk`
+
+**Use this when:**
+- Creating a signed production APK for sideloading or store upload
+
 ## PowerShell Execution Policy
 
 If you get an "execution policy" error, you can run scripts with:
